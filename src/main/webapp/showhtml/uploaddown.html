@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>uploaddown</title>
+</head>
+<body>
+在Web应用系统开发中，文件上传和下载功能是非常常用的功能，今天来讲一下JavaWeb中的文件上传和下载功能的实现。
+对于文件上传，浏览器在上传的过程中是将文件以流的形式提交到服务器端的，如果直接使用Servlet获取上传文件的输入流然后再解析里面的请求参数是比较麻烦，
+所以一般选择采用apache的开源工具common-fileupload这个文件上传组件。这个common-fileupload上传组件的jar包可以去apache官网上面下载，
+也可以在struts的lib文件夹下面找到，struts上传的功能就是基于这个实现的。common-fileupload是依赖于common-io这个包的，所以还需要下载这个包。
+
+基本原理
+文件上传原理
+通过为表单元素设置Method="post" enctype="multipart/form-data"属性，让表单提交的数据以二进制编码的方式提交，在接收此请求的Servlet中用二进制流来获取内容，
+就可以取得上传的文件的内容，从而实现文件的上传。
+文件下载实现
+我们要将Web应用系统中的文件资源提供给用户进行下载，首先我们要有一个页面列出上传文件目录下的所有文件，当用户点击文件下载超链接时就进行下载操作，编写一个ListFile方法，用于列出Web应用系统中所有下载文件。 
+这里简单说一下listfile方法，listfile方法是用来列出目录下的所有文件的，listfile方法内部用到了递归，在实际开发当中，
+我们肯定会在数据库创建一张表，里面会存储上传的文件名以及文件的具体存放目录，我们通过查询表就可以知道文件的具体存放目录，
+是不需要用到递归操作的，这个例子是因为没有使用数据库存储上传的文件名和文件的具体存放位置，而上传文件的存放位置又使用了散列算法打散存放，
+所以需要用到递归，在递归时，将获取到的文件名存放到从外面传递到listfile方法里面的Map集合当中，
+这样就可以保证所有的文件都存放在同一个Map集合当中。
+
+java.lang.IllegalStateException: getOutputStream() has already been called for this response
+这里是在释放在jsp中使用的对象，会调用response.getWriter(),因为这个方法是和
+response.getOutputStream()相冲突的！所以会出现以上这个异常。
+out.clear();
+out = pageContext.pushBody();
+返回null
+
+严重: Servlet.service() for servlet [dispatcher] in context with path [] threw exception 
+[Handler dispatch failed; nested exception is java.lang.NoSuchMethodError: 
+com.fasterxml.jackson.databind.ObjectMapper.canSerialize(Ljava/lang/Class;Ljava/util/concurrent/atomic/AtomicReference;)Z] with root cause
+我用的是spring4.3.3+jackson2.1 版本冲突,不兼容jackson2.1,调整到jackson2.7就好了
+</body>
+</html>

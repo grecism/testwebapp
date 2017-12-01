@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx" 
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xmlns:cache="http://www.springframework.org/schema/cache"
+       xmlns:util="http://www.springframework.org/schema/util" 
+       xmlns:c="http://www.springframework.org/schema/c"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="
+    http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+    http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd 
+    http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+    http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
+    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+    
+    <!-- 自动扫描包,将包下带有注解的类纳入Spring容器管理 -->
+    <context:component-scan base-package="com.main">
+    	<!-- 不扫描带有Controller注解的类 -->
+		<!-- <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" /> -->
+    </context:component-scan>
+    
+    <!-- 引入配置文件 -->
+    <!-- <context:property-placeholder location="classpath:jdbc.properties"/> -->
+    <context:property-placeholder location="classpath:configs/config_${spring.profiles.active}.properties"/>
+    
+    <!-- 引入配置文件2 -->
+    <!-- <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    	<property name="locations">
+    		<list>
+    		<value>classpath:jdbc.properties</value>
+    		</list>
+    	</property>
+    </bean> -->
+    
+    <!-- 引入国际化资源文件 -->
+    <!-- <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basename" value="classpath:messages_zh_CN.properties" />
+	</bean> -->
+	
+    <!-- 配置数据源dataSource -->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <!-- 基本属性 driverClassName、url、user、password -->
+        <property name="driverClassName" value="${db.jdbc.driverClassName}" />
+        <property name="url" value="${db.jdbc.url}"/>
+        <property name="username" value="${db.jdbc.username}"/>
+        <property name="password" value="${db.jdbc.password}"/>
+        <!-- 配置初始化大小、最小、最大 -->
+        <property name="initialSize" value="${db.ds.initialSize}"/>
+        <property name="minIdle" value="${db.ds.minIdle}"/>
+        <property name="maxActive" value="${db.ds.maxActive}"/>
+        <!-- 配置获取连接等待超时的时间 -->
+        <property name="maxWait" value="${db.ds.maxWait}"/>
+        <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+        <property name="timeBetweenEvictionRunsMillis" value="${db.ds.timeBetweenEvictionRunsMillis}"/>
+        <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+        <property name="minEvictableIdleTimeMillis" value="${db.ds.minEvictableIdleTimeMillis}"/>
+		<!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->
+        <property name="poolPreparedStatements" value="${db.ds.poolPreparedStatements}"/>
+        <property name="maxPoolPreparedStatementPerConnectionSize" value="${db.ds.maxPoolPreparedStatementPerConnectionSize}"/>
+        <!-- 配置监控统计拦截的filters 属性类型是字符串，通过别名的方式配置扩展插件，常用的插件有：监控统计用的filter:stat 日志用的filter:log4j 防御sql注入的filter:wall-->
+        <property name="filters" value="config,stat,log4j"/>
+        <property name="validationQuery" value="${db.ds.validationQuery}"/>
+        <property name="testWhileIdle" value="${db.ds.testWhileIdle}"/>
+        <property name="testOnBorrow" value="${db.ds.testOnBorrow}"/>
+        <property name="testOnReturn" value="${db.ds.testOnReturn}"/>
+        <property name="maxOpenPreparedStatements" value="${db.ds.maxOpenPreparedStatements}" />
+		<property name="removeAbandoned" value="${db.ds.removeAbandoned}" />
+		<property name="removeAbandonedTimeout" value="${db.ds.removeAbandonedTimeout}" />
+		<property name="logAbandoned" value="${db.ds.logAbandoned}" />
+    </bean>
+    
+    <!-- 配置mybatis文件,扫描所有mapperxml文件 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean" 
+    	p:dataSource-ref="dataSource"
+    	p:configLocation="classpath:mybatis-config.xml"
+    	/>
+    <!-- p:mapperLocations="classpath:com/test/mybatis/**/*.xml" -->
+    <!-- 配置mybatis文件,扫描所有mapperxml文件 2-->
+   <!--  <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+    	<property name="dataSource" ref="dataSource"></property>
+    	自动扫描entity目录, 省掉Configuration.xml里的手工配置
+    	<property name="configLocation" value="classpath:mybatis-config.xml"></property>
+    	<property name="mapperLocations" value="classpath:com/test/mybatis/*.xml"></property>
+    </bean> -->
+    
+    <!-- Spring与mybatis整合配置,扫描所有mapper接口 -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer" 
+    	p:basePackage="com.test.mapper.**"
+    	p:sqlSessionFactoryBeanName="sqlSessionFactory"/>
+    
+    <!-- Spring与mybatis整合配置,扫描所有mapper接口 2-->
+    <!-- <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+    	<property name="basePackage" value="com.test.mapper"></property>
+    	<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+    </bean> -->
+    
+    <!-- 对数据源进行数据管理 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager" 
+    	p:dataSource-ref="dataSource"/>
+    
+    <!-- 对数据源进行数据管理 2-->
+    <!-- <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    	<property name="dataSource" ref="dataSource"></property>
+    </bean> -->
+    
+    <!-- 启用对事物注解的支持 -->
+    <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
+    
+     <!-- 事务管理 配置切面 -->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <!-- 对insert,update,delete 开头的方法进行事务管理,只要有异常就回滚 -->
+            <tx:method name="insert*" propagation="REQUIRED" rollback-for="java.lang.Throwable"/>
+            <tx:method name="update*" propagation="REQUIRED" rollback-for="java.lang.Throwable"/>
+            <tx:method name="delete*" propagation="REQUIRED" rollback-for="java.lang.Throwable"/>
+            <!-- select,count开头的方法,开启只读,提高数据库访问性能 -->
+            <tx:method name="select*" read-only="true"/>
+            <tx:method name="count*" read-only="true"/>
+            <tx:method name="find*" read-only="true"/>
+            <tx:method name="query*" read-only="true"/>
+            <!-- 对其他方法 使用默认的事务管理 -->
+            <!-- <tx:method name="*"/> -->
+            
+            <tx:method name="*" propagation="SUPPORTS" read-only="true" />
+        </tx:attributes>
+    </tx:advice>
+    
+     <!-- 事务 aop 配置 -->
+    <aop:config>
+        <aop:pointcut id="serviceMethods" expression="execution(* com.main.service..*(..))"/>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="serviceMethods"/>
+    </aop:config>
+    
+    <!-- 配置使Spring采用CGLIB代理 -->
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+    
+    <!-- 自定义Realm -->
+   <!--  <bean id="ShiroRealm" class="com.test.common.base.admin.shiro.ShiroRealm" ></bean> -->
+
+    <!-- 安全管理器 -->
+   <!--  <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">  
+      	<property name="realm" ref="ShiroRealm"/>  
+    </bean>  --> 
+
+	<!-- 开启Shiro注解 -->
+   <!--  <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" depends-on="lifecycleBeanPostProcessor"/>  
+        <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">  
+      <property name="securityManager" ref="securityManager"/>  
+    </bean>  -->
+    
+     <!-- 保证实现了Shiro内部lifecycle函数的bean执行 -->  
+   <!--  <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/> -->  
+    
+    <!-- Shiro过滤器 -->
+    <!-- <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+		<property name="securityManager" ref="securityManager" />
+		
+		<property name="loginUrl" value="/" />
+		
+		<property name="successUrl" value="/main/index" />
+		
+		<property name="unauthorizedUrl" value="/login_toLogin" />
+		
+		<property name="filterChainDefinitions">
+			<value>
+			/static/login/** 			= anon
+			/plugins/keypad/** 			= anon
+			/static/js/myjs/** 			= authc
+			/static/js/** 				= anon
+			/uploadFiles/uploadImgs/** 	= anon
+           	/code.do 					= anon
+           	/login_login	 			= anon
+           	/app**/** 					= anon
+           	/weixin/** 					= anon
+           	/**							= authc
+			</value>
+		</property>
+	</bean> -->
+    <!-- <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">  
+        Shiro的核心安全接口,这个属性是必须的  
+        <property name="securityManager" ref="securityManager"/>
+        身份认证失败，则跳转到登录页面的配置  
+        <property name="loginUrl" value="/login.jsp"/>
+        权限认证失败，则跳转到指定页面  
+        <property name="unauthorizedUrl" value="/unauthorized.jsp"/>  
+        Shiro连接约束配置,即过滤链的定义  
+        <property name="filterChainDefinitions">  
+            <value>  
+                /login=anon
+                /user/admin*=authc
+                /user/student*/**=roles[teacher]
+                /user/teacher*/**=perms["user:create"]
+            </value>  
+        </property>
+    </bean>   -->
+   
+    <!-- 上传文件拦截，设置最大上传文件大小   10M=10*1024*1024(B)=10485760 bytes --> 
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"><!--配置上传文件-->
+        <property name="defaultEncoding" value="utf-8"/><!--默认字符编码-->
+        <property name="maxUploadSize" value="10485760"/><!--上传文件总大小-->
+        <property name="maxInMemorySize" value="4096"/><!--内存中的缓存大小-->
+    </bean>
+
+</beans>

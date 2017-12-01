@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<!-- 配置全局属性 -->
+	<settings>
+		<!-- 开启驼峰命名转换:Table{create_time} -> Entity{createTime} -->
+		<!-- <setting name="mapUnderscoreToCamelCase" value="true" /> -->
+		<!-- 打印查询语句(线上注释掉要) -->
+		<setting name="logImpl" value="STDOUT_LOGGING" />
+		<!-- 防止null值字段丢失 -->
+		<!-- <setting name="callSettersOnNulls" value="true"/>
+		<setting name="useGeneratedKeys" value="true" /> 
+        <setting name="defaultExecutorType" value="REUSE" /> -->
+	</settings>
+    <typeAliases>
+		<!-- <typeAlias alias="user" type="com.test.entity.User"/> -->
+		<!-- <typeAlias type="util.admin.PageData" alias="pd"/>
+		<typeAlias type="com.test.common.base.admin.otherpage.Page" alias="Page" />
+		<typeAlias type="com.test.common.base.admin.page.Page" alias="AdminPage"/>
+		<typeAlias type="com.test.entity.admin.system.User" alias="User"/>
+		<typeAlias type="com.test.entity.admin.system.Role" alias="Role"/>
+		<typeAlias type="com.test.entity.admin.system.Menu" alias="Menu"/> -->
+    </typeAliases>
+</configuration>
