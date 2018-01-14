@@ -27,8 +27,8 @@
     </context:component-scan>
     
     <!-- 引入配置文件 -->
-    <!-- <context:property-placeholder location="classpath:jdbc.properties"/> -->
-    <context:property-placeholder location="classpath:configs/config_${spring.profiles.active}.properties"/>
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+    <!-- <context:property-placeholder location="classpath:configs/config_${spring.profiles.active}.properties"/> -->
     
     <!-- 引入配置文件2 -->
     <!-- <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -46,16 +46,16 @@
 	
     <!-- 配置数据源dataSource -->
     <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
-        <!-- 基本属性 driverClassName、url、user、password -->
+       	<!-- 基本属性 driverClassName、url、user、password -->
         <property name="driverClassName" value="${db.jdbc.driverClassName}" />
         <property name="url" value="${db.jdbc.url}"/>
         <property name="username" value="${db.jdbc.username}"/>
         <property name="password" value="${db.jdbc.password}"/>
-        <!-- 配置初始化大小、最小、最大 -->
+       <!--  配置初始化大小、最小、最大 -->
         <property name="initialSize" value="${db.ds.initialSize}"/>
         <property name="minIdle" value="${db.ds.minIdle}"/>
         <property name="maxActive" value="${db.ds.maxActive}"/>
-        <!-- 配置获取连接等待超时的时间 -->
+       <!--  配置获取连接等待超时的时间 -->
         <property name="maxWait" value="${db.ds.maxWait}"/>
         <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
         <property name="timeBetweenEvictionRunsMillis" value="${db.ds.timeBetweenEvictionRunsMillis}"/>
@@ -64,7 +64,7 @@
 		<!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->
         <property name="poolPreparedStatements" value="${db.ds.poolPreparedStatements}"/>
         <property name="maxPoolPreparedStatementPerConnectionSize" value="${db.ds.maxPoolPreparedStatementPerConnectionSize}"/>
-        <!-- 配置监控统计拦截的filters 属性类型是字符串，通过别名的方式配置扩展插件，常用的插件有：监控统计用的filter:stat 日志用的filter:log4j 防御sql注入的filter:wall-->
+        <!-- 配置监控统计拦截的filters 属性类型是字符串，通过别名的方式配置扩展插件，常用的插件有：监控统计用的filter:stat 日志用的filter:log4j 防御sql注入的filter:wall -->
         <property name="filters" value="config,stat,log4j"/>
         <property name="validationQuery" value="${db.ds.validationQuery}"/>
         <property name="testWhileIdle" value="${db.ds.testWhileIdle}"/>

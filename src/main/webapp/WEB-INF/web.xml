@@ -4,9 +4,12 @@
 	<!-- 配置Spring配置文件路径 -->
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<param-value>
+		<!-- <param-value>
 			classpath:spring.xml,
 			classpath:spring-profile.xml
+		</param-value> -->
+		<param-value>
+			
 		</param-value>
 	</context-param>
 	
